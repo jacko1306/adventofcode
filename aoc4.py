@@ -79,7 +79,7 @@ def validycheck(line):
 
 report = []
 res = 0
-with open('/vscode/adventofcode/four.txt') as file:
+with open('/vscode/adventofcode/aoc4.txt') as file:
     report = file.read().split('\n\n')
 for line in report: 
     line = line.replace("\n", " ")

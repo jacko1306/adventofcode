@@ -42,7 +42,7 @@ def get_column(code):
     res = get_value(code, res)
     return res
 
-with open('/vscode/adventofcode/five.txt') as file:
+with open('/vscode/adventofcode/aoc5.txt') as file:
     report = file.read().split('\n')
 
 max_id = 0

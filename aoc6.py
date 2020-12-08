@@ -3,7 +3,7 @@
 from collections import Counter
 
 report = []
-with open('/vscode/adventofcode/six.txt') as f:
+with open('/vscode/adventofcode/aoc6.txt') as f:
     report = f.read().split('\n\n')
 res_1 = 0
 res_2 = 0

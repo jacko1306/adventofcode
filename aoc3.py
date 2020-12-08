@@ -2,7 +2,7 @@
 
 report = []
 
-with open('/vscode/adventofcode/report3.txt') as file:
+with open('/vscode/adventofcode/aoc3.txt') as file:
     for line in file:
         report.append(line.strip())
 
