@@ -2,7 +2,7 @@ import re
 
 report = []
 
-with open('two_input.txt') as file:
+with open('/vscode/adventofcode/aoc2.txt') as file:
     for line in file:
         report.append(line.strip())
 
@@ -23,19 +23,21 @@ def part_two(report):
     result = 0
     for line in report:
         policy, letter, password = line.split(' ')
-        print(line)
+        #print(line)
         letter = letter[0]
         values = policy.split('-')
         min_val = int(values[0])-1
         max_val = int(values[1])-1
-        print(password[min_val], ' ', password[max_val], ' ', letter)
+        #print(password[min_val], ' ', password[max_val], ' ', letter)
         if (password[min_val] == letter) ^ (password[max_val] == letter):
             result += 1
-            print(result)
+            #print(result)
     return result
 
+result1 = part_one(report)
 result = part_two(report)
 
+print(result1)
 print(result)
 
 

@@ -28,26 +28,27 @@ with open('vscode/adventofcode/aoc13.txt') as f:
 
 bus_list = notes[1].split(',')
 count_x = bus_list.count('x')
-fin = len(bus_list)-count_x
+fin = len(bus_list)
 start = int(bus_list[0])
 dep = 0
 found = 1
+bus_list_num = bus_list.copy()
 for i, bus in enumerate(bus_list):
     if bus != 'x':
         bus_list[i] = int(bus)
+    if bus == 'x':
+        bus_list_num[i] = bus_list_num[i-1]
 
+bus_list_num = [int(x) for x in bus_list_num]
 
+skip = []
 
-while found<fin:
-    dep += start
-    found = 0
-    for i, bus in enumerate(bus_list):
-        if bus == 'x':
-            continue
-        if (dep+i)%bus==0:
-            found +=1
-        else:
-            break
+for i, bus in enumerate(bus_list[1:]):
+    if bus == 'x':
+        continue
+    while (dep+i+1)%bus!=0:
+        dep += start
+    print(dep, ' ', start, ' ', i, ' ', bus)
+    start *= bus
 
 print(dep)
-
