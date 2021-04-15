@@ -1,21 +1,23 @@
 from itertools import product
+import copy
 
-with open("/home/florianjacke/vscode/private/jacko/adventofcode/2019/aoc2.txt") as f:
+with open("aoc2.txt") as f:
     program = list(map(int, f.read().split(",")))
 
+program2 = copy.copy(program)
 
-def calcoutput(program):
+
+def calc_output(program):
     position = 0
     while program[position] != 99:
-        output_pos = program[position + 3]
-        input_pos1 = program[position + 1]
-        input_pos2 = program[position + 2]
-        input_1 = program[input_pos1]
-        input_2 = program[input_pos2]
         if program[position] == 1:
-            program[output_pos] = input_1 + input_2
+            program[program[position + 3]] = (
+                program[program[position + 1]] + program[program[position + 2]]
+            )
         elif program[position] == 2:
-            program[output_pos] = input_1 * input_2
+            program[program[position + 3]] = (
+                program[program[position + 1]] * program[program[position + 2]]
+            )
         position += 4
     return program[0]
 
@@ -23,18 +25,15 @@ def calcoutput(program):
 program[1] = 12
 program[2] = 2
 
-print(calcoutput(program))
+print(calc_output(program))
 
 ### PART TWO
-combinations = list(product(range(100), repeat=2))
+combinations = product(range(100), repeat=2)
 
 for x, y in combinations:
-    with open(
-        "/home/florianjacke/vscode/private/jacko/adventofcode/2019/aoc2.txt"
-    ) as f:
-        program = list(map(int, f.read().split(",")))
+    program = copy.copy(program2)
     program[1] = x
     program[2] = y
-    if calcoutput(program) == 19690720:
+    if calc_output(program) == 19690720:
         print(100 * x + y)
         exit()
