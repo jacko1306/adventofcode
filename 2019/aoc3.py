@@ -1,7 +1,7 @@
 import collections
 import itertools
 
-with open("/home/florianjacke/vscode/private/jacko/adventofcode/2019/aoc3.txt") as f:
+with open("aoc3.txt") as f:
     operations = f.read().splitlines()
 
 
