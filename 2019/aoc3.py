@@ -1,37 +1,53 @@
-with open('/home/florianjacke/vscode/private/jacko/adventofcode/2019/aoc3.txt') as f:
-    wires = f.read().splitlines()
+import collections
+import itertools
 
-visited = [(0,0)]
+with open("/home/florianjacke/vscode/private/jacko/adventofcode/2019/aoc3.txt") as f:
+    operations = f.read().splitlines()
 
-def addtovisited(x_old, x_new, y_old, y_new):
-    global visited
-    
 
-for wire in wires:
+def get_visits(construct):
+    visited = {(0, 0): 0}
     x = 0
     y = 0
-    instructions = wire.split(",")
+    instructions = construct.split(",")
+    step_count = 0
     for instruction in instructions:
-        if instruction[0] == "R":
-            x_old = x
-            x = int(instruction[1])
-            for i in range(x_old+1,x+1): 
-                visited.append((i,y))
-        elif instruction[0] == "L":
-            x_old = x
-            x = int(instruction[1])
-            for i in range(x_old,0,-1): 
-                visited.append((i,y))
-        elif instruction[0] == "U":
-            y_old = y
-            y = int(instruction[1])
-            for i in range(y_old+1,y+1): 
-                visited.append((x,i))
-        elif instruction[0] == "D":
-            y_old = y
-            y = int(instruction[1]) 
-            for i in range(y_old,0,-1): 
-                visited.append((x,i))
-            
+        direction, steps = instruction[0], instruction[1:]
+        steps = int(steps)
+        if direction == "R":
+            new_pos = itertools.product(range(x, x + steps), [y])
+            x += steps
+        elif direction == "L":
+            new_pos = itertools.product(range(x, x - steps, -1), [y])
+            x -= steps
+        elif direction == "U":
+            new_pos = itertools.product([x], range(y, y + steps))
+            y += steps
+        elif direction == "D":
+            new_pos = itertools.product([x], range(y, y - steps, -1))
+            y -= steps
 
-print(visited)
+        for position in new_pos:
+            if position not in visited:
+                visited[position] = step_count
+            step_count += 1
+    return visited
+
+
+def min_distance(wire1, wire2):
+    crossings = set(wire1) & set(wire2)
+    crossings.remove((0, 0))
+    return min((abs(x) + abs(y) for x, y in crossings))
+
+
+def min_steps(wire1, wire2):
+    crossings = set(wire1) & set(wire2)
+    crossings.remove((0, 0))
+    return min(wire1[cross] + wire2[cross] for cross in crossings)
+
+
+wire1 = get_visits(operations[0])
+wire2 = get_visits(operations[1])
+
+print(min_distance(wire1, wire2))
+print(min_steps(wire1, wire2))
