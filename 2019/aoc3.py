@@ -12,8 +12,7 @@ def get_visits(construct):
     instructions = construct.split(",")
     step_count = 0
     for instruction in instructions:
-        direction, steps = instruction[0], instruction[1:]
-        steps = int(steps)
+        direction, steps = instruction[0], int(instruction[1:])
         if direction == "R":
             new_pos = itertools.product(range(x, x + steps), [y])
             x += steps
