@@ -34,3 +34,4 @@ for x in range(minimum, maximum + 1):
 
 print(res)
 print(res2)
+print()
