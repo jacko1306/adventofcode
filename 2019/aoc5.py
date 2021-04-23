@@ -51,20 +51,30 @@ def opcode8(A, B, C, position):
     else:
         program[get_position(A, position + 3)] = 0
 
+def get_instruction(instruction):
+    opcode = int(instruction[-2:])
+    modes = instruction[:-2].zfill(3)
+    return map(int,(list(modes))),opcode
+
+
+instructions = {
+    1: add,
+    2: multiply,
+    3: write,
+    4: output,
+    5: jump_if_true,
+    6: jump_if_false,
+    7: less_than,
+    8: equals,
+}
+
 
 def calc_output():
     position = 0
     while program[position] != 99:
         instruction = str(program[position])
-        instruction_length = len(instruction)
-        A, B, C = 0, 0, 0
-        opcode = int(instruction[-1])
-        if instruction_length >= 3:
-            C = int(instruction[-3])
-            if instruction_length >= 4:
-                B = int(instruction[-4])
-                if instruction_length == 5:
-                    A = int(instruction[-5])
+        [A,B,C],opcode = get_instruction(instruction)
+        
         if opcode == 1:
             opcode1(A, B, C, position)
             position += 4

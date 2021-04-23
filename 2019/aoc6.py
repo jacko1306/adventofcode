@@ -1,12 +1,12 @@
 with open("aoc6.txt") as f:
-    orbitMap = dict([list(reversed(x.split(")"))) for x in f.read().splitlines()])
+    orbit_map = dict([x.split(")")[::-1] for x in f.read().splitlines()])
 
 
-def get_center_recursive(origin, acc=0):
-    center = orbitMap.get(origin)
-    if center == None:
+def get_center(origin, acc=0):
+    center = orbit_map.get(origin)
+    if center is None:
         return acc
-    return get_center_recursive(center, acc + 1)
+    return get_center(center, acc + 1)
 
 
-print(sum(list(get_center_recursive(x) for x in orbitMap)))
+print(sum([get_center(x) for x in orbit_map]))
