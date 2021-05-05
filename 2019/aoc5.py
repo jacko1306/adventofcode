@@ -51,30 +51,19 @@ def opcode8(A, B, C, position):
     else:
         program[get_position(A, position + 3)] = 0
 
+
 def get_instruction(instruction):
     opcode = int(instruction[-2:])
     modes = instruction[:-2].zfill(3)
-    return map(int,(list(modes))),opcode
+    return map(int, (list(modes))), opcode
 
 
-instructions = {
-    1: add,
-    2: multiply,
-    3: write,
-    4: output,
-    5: jump_if_true,
-    6: jump_if_false,
-    7: less_than,
-    8: equals,
-}
-
-
-def calc_output():
+def calc_output(input_value):
     position = 0
     while program[position] != 99:
         instruction = str(program[position])
-        [A,B,C],opcode = get_instruction(instruction)
-        
+        [A, B, C], opcode = get_instruction(instruction)
+
         if opcode == 1:
             opcode1(A, B, C, position)
             position += 4
@@ -82,7 +71,7 @@ def calc_output():
             opcode2(A, B, C, position)
             position += 4
         elif opcode == 3:
-            program[program[position + 1]] = 5
+            program[program[position + 1]] = input_value
             position += 2
         elif opcode == 4:
             print(program[get_position(C, position + 1)])
@@ -107,6 +96,12 @@ def calc_output():
             position += 4
     return program
 
-calc_output()
+print('part 1:')
+calc_output(1)
 
-### Part 1 without opcodes 5,6,7,8 and input 1
+print('part 2:')
+
+with open("aoc5.txt") as f:
+    program = list(map(int, f.read().split(",")))
+
+calc_output(5)
