@@ -107,5 +107,5 @@ for phases in permutations(range(5)):
         next_input = calc_output([phase, next_input])
     if next_input > max_output:
         max_output = next_input
-        
+
 print(max_output)
