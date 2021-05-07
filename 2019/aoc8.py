@@ -11,11 +11,9 @@ def split_x_at(input_string, split):
 width = 25
 height = 6
 
-pixel_count = len(image)
 layer_lenght = width * height
 layer_count = int(pixel_count / (width * height))
 layers = split_x_at(image, layer_lenght)
-test = len(layers[0])
 
 fewest_zeros = sys.maxsize
 for element in layers:
@@ -29,7 +27,6 @@ for element in layers:
 print(output)
 
 picture = ""
-
 
 lines = []
 for element in layers:
@@ -46,23 +43,20 @@ def get_deeper_pixel(position, layer_number, latest_pixel=""):
         if layer_number < layer_count - 1:
             return get_deeper_pixel(position, layer_number + 1, latest_pixel)
         else:
-            return ''
+            return ""
+
 
 for x in range(layer_lenght):
     picture += get_deeper_pixel(x, 0)
 
 picture = split_x_at(picture, width)
 
-test = len(picture[0])
-
 for i, line in enumerate(picture):
     length = len(line)
-    if i == 98:
-        print('here')
-    newline = ''
+    newline = ""
     for x in line:
-        if x == '1':
-            newline += ' '
+        if x == "1":
+            newline += " "
         else:
-            newline += 'X'
+            newline += "X"
     print(newline)
