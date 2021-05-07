@@ -26,9 +26,6 @@ def get_center(origin, acc_list=[]):
 you_2_com = get_center("YOU", [])
 san_2_com = get_center("SAN", [])
 
-matching_paths = you_2_com + san_2_com
-matching_paths = [
-    item for item, count in collections.Counter(matching_paths).items() if count > 1
-]
+matching_paths = set(you_2_com).intersection(san_2_com)
 
 print(len(you_2_com) + len(san_2_com) - 2 * len(matching_paths))
