@@ -31,20 +31,20 @@ def append_value(dict_obj, key, value):
 
 
 def check_bingo(puzzle_id):
-    a = Counter([item[0] for item in database[puzzle_id]])
-    b = Counter([item[1] for item in database[puzzle_id]])
-    return a.most_common(1)[0][1] == 5 or b.most_common(1)[0][1] == 5
+    colums = Counter([item[0] for item in database[puzzle_id]])
+    rows = Counter([item[1] for item in database[puzzle_id]])
+    return colums.most_common(1)[0][1] == 5 or rows.most_common(1)[0][1] == 5
 
 
 def result():
     acc = 0
-    for line in puzzle:
-        unmarked = list(set(line) - set(already_called))
+    for row in puzzle:
+        unmarked = list(set(row) - set(already_called))
         acc += int(np.sum(unmarked))
     return acc
 
+puzzle_has_bingo = {}
 
-bingo = False
 for call in calls:
     already_called.append(call)
     for k, puzzle in enumerate(puzzles):
@@ -54,9 +54,8 @@ for call in calls:
                     append_value(database, k, [i, j])
                     bingo = check_bingo(k)
                     if bingo:
-                        print(result()*call)
-                        break
-        if bingo:
-            break
-    if bingo:
-        break
+                        if k not in puzzle_has_bingo and (len(puzzle_has_bingo) == 0 or len(puzzle_has_bingo) == len(puzzles)-1):
+                            print(result() * call)
+                        puzzle_has_bingo[k] = True
+                        
+
