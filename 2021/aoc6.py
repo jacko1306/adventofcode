@@ -10,8 +10,6 @@ def mapping():
     fishes = [int(fish) for fish in fishes]
     N = defaultdict(int)
     for fish in fishes:
-        if fish not in N:
-            N[fish] = 0
         N[fish] += 1
 
 
