@@ -17,3 +17,6 @@ for x in range(1, max(positions) + 1):
 
 
 print(min_fuel)
+
+
+#part 1 without sum_to_zero
