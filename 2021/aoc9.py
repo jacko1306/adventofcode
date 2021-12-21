@@ -1,7 +1,6 @@
 import numpy as np
-from itertools import combinations
+from collections import defaultdict
 import copy
-from numpy.core.arrayprint import printoptions
 
 
 with open("aoc9.txt") as f:
@@ -15,6 +14,18 @@ for line in puzzle_input:
 low_candidates = copy.deepcopy(heightmap)
 
 
+def is_inside(coordinates):
+    if (
+        coordinates[0] > -1
+        and coordinates[1] > -1
+        and coordinates[1] < len(heightmap[0])
+        and coordinates[0] < len(heightmap)
+    ):
+        return True
+    else:
+        return False
+
+
 def get_neighbors(coordinates: np.array):
     normal_vectors = [
         np.array([0, 1]),
@@ -24,28 +35,66 @@ def get_neighbors(coordinates: np.array):
     ]
     neighbors = []
     for vector in normal_vectors:
-        neighbors.append(vector + coordinates)
+        if is_inside(vector + coordinates):
+            neighbors.append(vector + coordinates)
     return neighbors
 
 
 for y, y_value in enumerate(heightmap):
     for x, x_value in enumerate(y_value):
-        neighbors = get_neighbors((x, y))
+        neighbors = get_neighbors((y, x))
         for neighbor in neighbors:
-            if (
-                neighbor[0] > -1
-                and neighbor[1] > -1
-                and neighbor[0] < len(heightmap[0])
-                and neighbor[1] < len(heightmap)
-            ):
-                test_value = heightmap[neighbor[1]][neighbor[0]]
-                if test_value < x_value:
-                    low_candidates[y][x] = 9
+            test_value = heightmap[neighbor[0]][neighbor[1]]
+            if test_value < x_value:
+                low_candidates[y][x] = 9
+
 
 res = 0
 for line in low_candidates:
     for value in line:
         if value != 9:
             res += value + 1
-
 print(res)
+
+visited = defaultdict(lambda: False)
+basins = defaultdict()
+
+
+def get_neighbors_2(coordinates):
+    return_neighbors = []
+    neighbors = get_neighbors(coordinates)
+    for neighbor in neighbors:
+        if (
+            heightmap[neighbor[0]][neighbor[1]] != 9
+            and not visited[(neighbor[0], neighbor[1])]
+        ):
+            return_neighbors.append(neighbor)
+    return return_neighbors
+
+
+def get_non_9_neighbors(coordinates, res=1):
+    visited[coordinates] = True
+    neighbors = get_neighbors_2(coordinates)
+    for neighbor in neighbors:
+        if not visited[(neighbor[0], neighbor[1])]:
+            res += get_non_9_neighbors((neighbor[0], neighbor[1]), 1)
+    return res
+
+
+basin_counter = 0
+
+
+for y, y_value in enumerate(heightmap):
+    for x, x_value in enumerate(y_value):
+        if not visited[(y, x)] and x_value != 9:
+            basins[basin_counter] = get_non_9_neighbors((y, x))
+            basin_counter += 1
+
+
+max_3 = sorted(basins.items(), key=lambda pair: pair[1], reverse=True)[:3]
+
+product_max_3 = 1
+for k, v in max_3:
+    product_max_3 *= v
+
+print(product_max_3)
