@@ -3,16 +3,13 @@ with open("aoc13.txt") as f:
 
 delimiter = puzzle.index("")
 points = puzzle[:delimiter]
-instructions = puzzle[delimiter:]
+instructions = puzzle[delimiter + 1 :]
 all_points = [(int(x), int(y)) for x, y in (p.split(",") for p in points)]
 max_x = max(all_points, key=lambda x: x[0])[0] + 1
 max_y = max(all_points, key=lambda x: x[1])[1] + 1
-# use only first instruction for part 1
-instructions = instructions[1]
-print(max_x, " ", max_y)
-fold_axis, fold_val = instructions.split(" ")[2].split("=")
-fold_val = int(fold_val)
-grid_original = [["." for _ in range(max_x)] for _ in range(max_y)]
+
+
+grid_original = [["." for _ in range(max_x)] for _ in range(max_y + 1)]
 
 for point in points:
     x, y = point.split(",")
@@ -24,6 +21,7 @@ for point in points:
 def print_grid(grid):
     for y in range(len(grid)):
         print("".join(grid[y]))
+    print()
 
 
 def split_y_for_folding(grid: list, fold_val) -> list:
@@ -40,20 +38,12 @@ def flip_second_half_at_y(grid) -> list:
     return list(reversed(grid))
 
 
-def flip_second_halt_at_x(grid) -> list:
+def flip_second_half_at_x(grid) -> list:
     new_grid = [["." for _ in range(len(grid[0]))] for _ in range(len(grid))]
     for y, line in enumerate(grid):
         new_line = list(reversed(line))
         new_grid[y] = new_line
     return new_grid
-
-
-if fold_axis == "y":
-    halfes = split_y_for_folding(grid_original, fold_val)
-    second_half = flip_second_half_at_y(halfes[1])
-else:
-    halfes = split_x_for_folding(grid_original, fold_val)
-    second_half = flip_second_halt_at_x(halfes[1])
 
 
 def combine_two_halfes(grid1, grid2):
@@ -66,12 +56,23 @@ def combine_two_halfes(grid1, grid2):
     return return_grid
 
 
-finished_grid = combine_two_halfes(halfes[0], second_half)
-# print_grid(finished_grid)
-
-
 def count_dots(grid):
     return sum(x.count("#") for x in grid)
 
 
-print(count_dots(finished_grid))
+current_grid = grid_original
+for i, instruction in enumerate(instructions):
+    fold_axis, fold_val = instruction.split(" ")[2].split("=")
+    fold_val = int(fold_val)
+    if fold_axis == "y":
+        halfes = split_y_for_folding(current_grid, fold_val)
+        second_half = flip_second_half_at_y(halfes[1])
+    else:
+        halfes = split_x_for_folding(current_grid, fold_val)
+        second_half = flip_second_half_at_x(halfes[1])
+    current_grid = combine_two_halfes(halfes[0], second_half)
+    if i == 0:
+        print(count_dots(current_grid))
+
+
+print_grid(current_grid)
