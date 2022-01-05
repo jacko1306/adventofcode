@@ -3,18 +3,7 @@ from collections import defaultdict
 import copy
 
 
-with open("aoc9.txt") as f:
-    puzzle_input = f.read().splitlines()
-
-heightmap = []
-
-for line in puzzle_input:
-    heightmap.append([int(x) for x in line])
-
-low_candidates = copy.deepcopy(heightmap)
-
-
-def is_inside(coordinates):
+def is_inside(coordinates, heightmap):
     if (
         coordinates[0] > -1
         and coordinates[1] > -1
@@ -26,7 +15,7 @@ def is_inside(coordinates):
         return False
 
 
-def get_neighbors(coordinates: np.array):
+def get_neighbors(coordinates: np.array, heightmap):
     normal_vectors = [
         np.array([0, 1]),
         np.array([1, 0]),
@@ -35,34 +24,14 @@ def get_neighbors(coordinates: np.array):
     ]
     neighbors = []
     for vector in normal_vectors:
-        if is_inside(vector + coordinates):
+        if is_inside(vector + coordinates, heightmap):
             neighbors.append(vector + coordinates)
     return neighbors
 
 
-for y, y_value in enumerate(heightmap):
-    for x, x_value in enumerate(y_value):
-        neighbors = get_neighbors((y, x))
-        for neighbor in neighbors:
-            test_value = heightmap[neighbor[0]][neighbor[1]]
-            if test_value < x_value:
-                low_candidates[y][x] = 9
-
-
-res = 0
-for line in low_candidates:
-    for value in line:
-        if value != 9:
-            res += value + 1
-print(res)
-
-visited = defaultdict(lambda: False)
-basins = defaultdict()
-
-
-def get_neighbors_2(coordinates):
+def get_neighbors_2(coordinates, heightmap):
     return_neighbors = []
-    neighbors = get_neighbors(coordinates)
+    neighbors = get_neighbors(coordinates, heightmap)
     for neighbor in neighbors:
         if (
             heightmap[neighbor[0]][neighbor[1]] != 9
@@ -72,29 +41,45 @@ def get_neighbors_2(coordinates):
     return return_neighbors
 
 
-def get_non_9_neighbors(coordinates, res=1):
+def get_non_9_neighbors(coordinates, res, heightmap):
     visited[coordinates] = True
-    neighbors = get_neighbors_2(coordinates)
+    neighbors = get_neighbors_2(coordinates, heightmap)
     for neighbor in neighbors:
         if not visited[(neighbor[0], neighbor[1])]:
-            res += get_non_9_neighbors((neighbor[0], neighbor[1]), 1)
+            res += get_non_9_neighbors((neighbor[0], neighbor[1]), 1, heightmap)
     return res
 
 
-basin_counter = 0
-
-
-for y, y_value in enumerate(heightmap):
-    for x, x_value in enumerate(y_value):
-        if not visited[(y, x)] and x_value != 9:
-            basins[basin_counter] = get_non_9_neighbors((y, x))
-            basin_counter += 1
-
-
-max_3 = sorted(basins.items(), key=lambda pair: pair[1], reverse=True)[:3]
-
-product_max_3 = 1
-for k, v in max_3:
-    product_max_3 *= v
-
-print(product_max_3)
+if __name__ == "__main__":
+    with open("aoc9.txt") as f:
+        puzzle_input = f.read().splitlines()
+    heightmap = []
+    for line in puzzle_input:
+        heightmap.append([int(x) for x in line])
+    low_candidates = copy.deepcopy(heightmap)
+    for y, y_value in enumerate(heightmap):
+        for x, x_value in enumerate(y_value):
+            neighbors = get_neighbors((y, x), heightmap)
+            for neighbor in neighbors:
+                test_value = heightmap[neighbor[0]][neighbor[1]]
+                if test_value < x_value:
+                    low_candidates[y][x] = 9
+    res = 0
+    for line in low_candidates:
+        for value in line:
+            if value != 9:
+                res += value + 1
+    print(res)
+    visited = defaultdict(lambda: False)
+    basins = defaultdict()
+    basin_counter = 0
+    for y, y_value in enumerate(heightmap):
+        for x, x_value in enumerate(y_value):
+            if not visited[(y, x)] and x_value != 9:
+                basins[basin_counter] = get_non_9_neighbors((y, x),1, heightmap)
+                basin_counter += 1
+    max_3 = sorted(basins.items(), key=lambda pair: pair[1], reverse=True)[:3]
+    product_max_3 = 1
+    for k, v in max_3:
+        product_max_3 *= v
+    print(product_max_3)
