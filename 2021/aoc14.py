@@ -1,35 +1,32 @@
-from collections import defaultdict
 from collections import Counter
+import string
 
-with open('aoc14.txt') as f:
-    puzzle = f.read().splitlines()
+lines = [line.strip() for line in open('aoc14.txt', 'r').readlines()]
+template = lines[0]
+rules = [rule.split(' ') for rule in lines[2:]]
+rules = {a: (a[0]+c,c+a[1]) for a,b,c in rules}
+pairs = [''.join(p) for p in zip(template, template[1:])]
 
-template = puzzle[0]
-rules = puzzle[2:]
-rulebook = defaultdict()
-for rule in rules:
-    k,v = rule.split(' -> ')
-    rulebook[k] = v
+# total the pairs created by substitution
+def run(steps):
+    ctr = Counter(pairs)
+    for i in range(steps):
+        newCtr = {key : 0 for key in rules.keys()}
+        for key, value in ctr.items():
+            newCtr[rules[key][0]] += value
+            newCtr[rules[key][1]] += value
+        ctr = newCtr
 
-def calc(template):
-    for _ in range(5):
-        insert_vals = []
-        for i in range(len(template) - 1):
-            start = template[i]
-            end = template[i+1]
-            lookup = start + end
-            insert_val = rulebook[lookup]
-            insert_vals.append(insert_val)
-        template = ''.join(''.join(x) for x in zip(template,insert_vals))+template[-1]
-        
-        c = Counter(template)
-        print(c)
-        print(template)
-    return c
+    letterTotals = {letter : 0 for letter in list(string.ascii_uppercase)}
+    for key, value in ctr.items():
+        letterTotals[key[0]] += value
 
+    # the last character in the template gets another count
+    letterTotals[template[-1]] += 1
 
-c = calc(template)
-min_occ = min(c.values())
-max_occ = max(c.values())
+    lmax = max(letterTotals.values())
+    lmin = min([value for value in letterTotals.values() if value > 0])
+    return lmax - lmin
 
-print(max_occ-min_occ)
+print('part 1:', run(10))
+print('part 2:', run(40))
