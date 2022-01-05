@@ -1,56 +1,97 @@
-from collections import defaultdict
-from aoc9 import get_neighbors
-import sys
+import numpy as np
+import matplotlib.pyplot as plt
 
-with open('aoc15.txt') as f:
-    puzzle = f.read().splitlines()
 
-riskmap = [[int(x) for x in line] for line in puzzle]
+def dijkstra(map): 
+    max_val = len(map)
+    distmap = np.ones((max_val, max_val), dtype=int) * np.Infinity
+    distmap[0, 0] = 0
+    originmap = np.ones((max_val, max_val), dtype=int) * np.nan
+    visited = np.zeros((max_val, max_val), dtype=bool)
+    finished = False
+    x, y = int(0), int(0)
+    count = 0
 
+    while not finished:
+        # move to x+1,y
+        if x < max_val - 1:
+            if distmap[x + 1, y] > map[x + 1, y] + distmap[x, y] and not visited[x + 1, y]:
+                distmap[x + 1, y] = map[x + 1, y] + distmap[x, y]
+                originmap[x + 1, y] = np.ravel_multi_index([x, y], (max_val, max_val))
+        # move to x-1,y
+        if x > 0:
+            if distmap[x - 1, y] > map[x - 1, y] + distmap[x, y] and not visited[x - 1, y]:
+                distmap[x - 1, y] = map[x - 1, y] + distmap[x, y]
+                originmap[x - 1, y] = np.ravel_multi_index([x, y], (max_val, max_val))
+        # move to x,y+1
+        if y < max_val - 1:
+            if distmap[x, y + 1] > map[x, y + 1] + distmap[x, y] and not visited[x, y + 1]:
+                distmap[x, y + 1] = map[x, y + 1] + distmap[x, y]
+                originmap[x, y + 1] = np.ravel_multi_index([x, y], (max_val, max_val))
+        # move to x,y-1
+        if y > 0:
+            if distmap[x, y - 1] > map[x, y - 1] + distmap[x, y] and not visited[x, y - 1]:
+                distmap[x, y - 1] = map[x, y - 1] + distmap[x, y]
+                originmap[x, y - 1] = np.ravel_multi_index([x, y], (max_val, max_val))
+
+        visited[x, y] = True
+        dismaptemp = distmap
+        dismaptemp[np.where(visited)] = np.Infinity
+        # now we find the shortest path so far
+        minpost = np.unravel_index(np.argmin(dismaptemp), np.shape(dismaptemp))
+        x, y = minpost[0], minpost[1]
+        if x == max_val - 1 and y == max_val - 1:
+            finished = True
+        count = count + 1
+    return distmap, max_val	
+'''
+# Start backtracking to plot the path
+mattemp = map.astype(float)
+x, y = max_val - 1, max_val - 1
 path = []
+mattemp[int(x), int(y)] = np.nan
 
-def get_smallest_neighbor(x,y,visited):
-    neighbors = get_neighbors((x,y),riskmap)
-    test = defaultdict()
-    for neighbor in neighbors:
-        if (neighbor[0],neighbor[1]) not in visited:
-            test[(neighbor[0],neighbor[1])] = riskmap[neighbor[0]][neighbor[1]]
-    if not test:
-        return None, None         
-    smallest =  min(test.values())
-    res = [key for key in test if test[key] == smallest]
-    return test, smallest
+while x > 0.0 or y > 0.0:
+    path.append([int(x), int(y)])
+    xxyy = np.unravel_index(int(originmap[int(x), int(y)]), (max_val, max_val))
+    x, y = xxyy[0], xxyy[1]
+    mattemp[int(x), int(y)] = np.nan
+path.append([int(x), int(y)])
 
-def explore_map(x, y, map, path=[]):
-    path = path + [(x,y)]
-    paths = []
-    next_nodes,val = get_smallest_neighbor(x,y,path)
-    if x == len(map)-1 and y == len(map[0])-1:
-        return [path]
-    if next_nodes == None:
-        return []
-    for node in next_nodes:
-        newpaths = explore_map(node[0],node[1], map, path)
-        for newpath in newpaths:
-                paths.append(newpath)
-    return paths
 
-paths = explore_map(0,0,riskmap)
+#Output and visualization of the path
+current_cmap = plt.cm.Blues
+current_cmap.set_bad(color='red')
+fig, ax = plt.subplots(figsize=(8,8))
+ax.matshow(mattemp,cmap=plt.cm.Blues, vmin=0, vmax=20)
+for i in range(max_val):
+    for j in range(max_val):
+      c = map[j,i]
+      ax.text(i, j, str(c), va='center', ha='center')
 
-def get_risk_to_path(path):
-    risk = 0
-    for point in path:
-        risk += riskmap[point[0]][point[1]]
-    return risk
+plt.show()
+'''
 
-lowest_risk = sys.maxsize
-print(len(paths))
+with open("aoc15.txt") as f:
+    map = f.read().splitlines()
 
-for path in paths:
-    
-    risk = get_risk_to_path(path)
-    #print(path, ' ', risk)
-    if risk < lowest_risk:
-        lowest_risk = risk
+map = np.array([list(int(x) for x in line) for line in map])
 
-print(lowest_risk)
+distmap,max_val = dijkstra(map)
+print("The path length is: " + str(distmap[max_val - 1, max_val - 1]))
+
+
+n = 5
+map = np.tile(map, (n,n))
+
+for i,l in enumerate(map):
+    for step in range(1,n):
+        l[10*step:10*step+10] += step
+        if (i >= 10*step):
+            l += 1
+
+for z in range(1,9):
+    map[map==z+9] = z
+
+distmap,max_val = dijkstra(map)
+print("The path length is: " + str(distmap[max_val - 1, max_val - 1]))
