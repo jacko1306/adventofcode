@@ -56,10 +56,6 @@ for line in puzzle:
             )
     only_numbers = [int(i) for i in line if i.isdigit()]
     if len(only_numbers) > 0:
-        first = int(str(only_numbers)[1])
-        last = int(str(only_numbers)[-2])
-        combined = str(first) + str(last)
-
-        res += int(combined)
+        res += only_numbers[0]*10 + only_numbers[-1]
 
 print(res)
