@@ -1,4 +1,5 @@
 from collections import defaultdict
+import math
 
 with open("input2aoc.txt") as f:
     game_list = f.read().splitlines()
@@ -6,6 +7,9 @@ with open("input2aoc.txt") as f:
 loaded = {"red": 12, "green": 13, "blue": 14}
 
 possible_games_sum = 0
+
+power = 1
+power_sum = 0
 
 for game in game_list:
     id = int(game.split(": ")[0].split(" ")[1])
@@ -23,11 +27,13 @@ for game in game_list:
                 new_val = int(subsubset[subsubset.index(k) - 1])
                 max_counter[k] = max(max_counter[k], new_val)
 
-    
-    compared_dict = {k: loaded[k] for k in loaded if k in max_counter and loaded[k] >= max_counter[k]}
+    compared_dict = {
+        k: loaded[k] for k in loaded if k in max_counter and loaded[k] >= max_counter[k]
+    }
     if (len(compared_dict)) >= 3:
         possible_games_sum += id
 
-print(possible_games_sum)
-    
+    power_sum += math.prod(max_counter.values())
 
+print(possible_games_sum)
+print(power_sum)
