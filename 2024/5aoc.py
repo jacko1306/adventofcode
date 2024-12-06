@@ -25,7 +25,6 @@ def check_rule(number, sequence):
                 if number_index_in_rule < compare_index_in_rule:
                     if number_index_in_sequence < compare_index_in_sequence:
                         rule_counter += 1
-                    
 
                 elif number_index_in_rule > compare_index_in_rule:
                     if number_index_in_sequence > compare_index_in_sequence:
@@ -55,9 +54,6 @@ for k, update in enumerate(updates):
     if update_counter == len(update):
         middle = floor(len(update) / 2)
         result += update[middle]
-    else:
-        k                            
-
 
 print(result)
 print(result2)
