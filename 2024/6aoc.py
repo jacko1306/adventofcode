@@ -21,9 +21,11 @@ for x, line in enumerate(guard_map):
             obstacles.append([x, y])
         if point == "^":
             visited.append([x, y])
-            visited_with_dir.append([x,y,current_dir[0],current_dir[1]])
+            visited_with_dir.append([x, y, current_dir[0], current_dir[1]])
 
 obstructions = obstacles.copy()
+
+
 def reset_to_start():
     global current_position
     global visited
@@ -34,12 +36,13 @@ def reset_to_start():
     current_position.append(visited[0][1])
 
 
-
 def actual_move():
     global counter
     if current_position not in visited:
         visited.append([current_position[0], current_position[1]])
-        visited_with_dir.append([current_position[0],current_position[1],current_dir[0],current_dir[1]])
+        visited_with_dir.append(
+            [current_position[0], current_position[1], current_dir[0], current_dir[1]]
+        )
     current_position[0] += current_dir[0]
     current_position[1] += current_dir[1]
     return
@@ -102,8 +105,10 @@ print(len(visited))
 def test_obstruction():
     return
 
+
 def no_loop():
     return
+
 
 reset_to_start()
 
