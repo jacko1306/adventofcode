@@ -43,17 +43,33 @@ result = 0
 result2 = 0
 
 
-for k, update in enumerate(updates):
-    tested_updates = []
+for update in updates:
     update_counter = 0
-    for u in update:
-        n, new_update = check_rule(u, update)
-        update_counter += n
-        if new_update not in tested_updates:
-            tested_updates.append(new_update)
+    update_counter2 = 0
+    new_update = []
+    error_in_update = False
+
+    while new_update != update:
+        if new_update:
+            error_in_update = True
+            update = new_update.copy()
+            update_counter2 = 0
+        for u in update:
+            n, new_update = check_rule(u, update)
+            if n:
+                if error_in_update:
+                    update_counter2 += n
+                else:
+                    update_counter += n
+            else:
+                break
+
     if update_counter == len(update):
         middle = floor(len(update) / 2)
         result += update[middle]
+    if update_counter2 == len(update):
+        middle = floor(len(update) / 2)
+        result2 += update[middle]
 
 print(result)
 print(result2)
